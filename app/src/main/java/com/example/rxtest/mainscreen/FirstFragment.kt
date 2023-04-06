@@ -57,7 +57,10 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
 
     override fun onStart() {
         super.onStart()
-        val fetchCitiesDisposable = viewModel.fetchCities.subscribe (
+        val fetchCitiesDisposable = viewModel
+            .fetchCities
+            .doOnSubscribe{ showProgress() }
+            .subscribe (
             { cities -> showCities(cities) },
             { _ -> showError()})
         viewModel.addToComposable(fetchCitiesDisposable)
@@ -78,14 +81,15 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     }
 
     fun showProgress() {
-
+        Log.d("FirstFragment", "Show Progress")
     }
 
     fun showError() {
-
+        Log.d("FirstFragment", "Show Error")
     }
 
     fun showCities(cities: List<City>) {
+        Log.d("FirstFragment", "Show Cities")
         binding.citiesList.adapter = CitiesAdapter(cities) {
             Log.d("FirstFragment", "Go to details ${it.name}")
             val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it.name)
