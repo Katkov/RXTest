@@ -1,7 +1,8 @@
 package com.example.rxtest.repository
 
 import com.example.rxtest.networking.model.City
+import io.reactivex.rxjava3.core.Single
 
 interface Repository {
-    suspend fun fetchCities(query: String): List<City>
+    fun fetchCities(query: String): Single<List<City>>
 }

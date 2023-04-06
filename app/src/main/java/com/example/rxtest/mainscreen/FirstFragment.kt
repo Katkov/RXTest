@@ -18,6 +18,7 @@ import com.example.rxtest.databinding.FragmentFirstBinding
 import com.example.rxtest.helpers.NetworkResult
 import com.example.rxtest.networking.model.City
 import dagger.android.support.DaggerFragment
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,20 +52,20 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.citiesState.collect { uiState ->
-                    // New value received
-                    when (uiState) {
-                        is NetworkResult.Empty -> showNoResults()
-                        is NetworkResult.Loading -> showProgress()
-                        is NetworkResult.Error -> showError()
-                        is NetworkResult.Loaded -> showCities(uiState.data)
-                    }
 
-                }
-            }
-        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val fetchCitiesDisposable = viewModel.fetchCities.subscribe (
+            { cities -> showCities(cities) },
+            { _ -> showError()})
+        viewModel.addToComposable(fetchCitiesDisposable)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.clearComposable()
     }
 
     override fun onDestroyView() {
