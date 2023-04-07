@@ -17,8 +17,10 @@ import com.example.rxtest.R
 import com.example.rxtest.databinding.FragmentFirstBinding
 import com.example.rxtest.helpers.NetworkResult
 import com.example.rxtest.networking.model.City
+import com.example.rxtest.networking.model.Sports
 import dagger.android.support.DaggerFragment
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeDelayErrorIterable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,6 +34,8 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var adapter: CitiesAdapter
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -61,9 +65,18 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
             .fetchCities
             .doOnSubscribe{ showProgress() }
             .subscribe (
-            { cities -> showCities(cities) },
-            { _ -> showError()})
+                { cities -> showCities(cities) },
+                { _ -> showError()}
+            )
         viewModel.addToComposable(fetchCitiesDisposable)
+//        val fetchSportsDisposable = viewModel
+//            .fetchSports
+//            .doOnSubscribe { showProgress() }
+//            .subscribe(
+//                { sports -> showSports(sports) },
+//                { _ -> showError()}
+//            )
+//        viewModel.addToComposable(fetchSportsDisposable)
     }
 
     override fun onStop() {
@@ -74,6 +87,10 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun showSports(sports: Sports) {
+        Log.d("FirstFragment", "Show Sports")
     }
 
     fun showNoResults() {
@@ -90,10 +107,22 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
 
     fun showCities(cities: List<City>) {
         Log.d("FirstFragment", "Show Cities")
-        binding.citiesList.adapter = CitiesAdapter(cities) {
+        adapter = CitiesAdapter {
+            //adapter.remove(city = city)
             Log.d("FirstFragment", "Go to details ${it.name}")
-            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it.name)
-            findNavController().navigate(action)
+            //val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it.name)
+            //findNavController().navigate(action)
+            deleteItem(it)
         }
+        binding.citiesList.adapter = adapter
+        adapter.submitList(cities)
+    }
+
+    fun deleteItem (city: City) {
+        val list = adapter.currentList
+        val newList = mutableListOf<City>()
+        newList.addAll(list)
+        newList.remove(city)
+        adapter.submitList(newList)
     }
 }
