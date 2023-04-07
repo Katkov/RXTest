@@ -44,6 +44,6 @@ class NetworkModule {
 
     companion object {
         const val NETWORK_REQUEST_TIMEOUT_SECONDS = 15L
-        const val BASE_URL = "https://api.weatherapi.com/v1/"
+        const val BASE_URL = "https://api.instantwebtools.net/v1/"
     }
 }

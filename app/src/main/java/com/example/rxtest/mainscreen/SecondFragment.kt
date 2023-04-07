@@ -7,8 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.rxtest.R
 import com.example.rxtest.databinding.FragmentSecondBinding
+import com.example.rxtest.networking.model.src
 import dagger.android.support.DaggerFragment
 
 /**
@@ -36,10 +39,12 @@ class SecondFragment : DaggerFragment(R.layout.fragment_second) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val cityName = args.cityName
-        binding.textviewSecond.text = cityName
-        binding.buttonSecond.setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        val person = args.person
+        binding.apply {
+            userId.text = person._id
+            userName.text = person.name
+            userTrips.text = "Trips: ${person.trips}"
+            person.src(userImage)
         }
     }
 

@@ -28,9 +28,6 @@ class MainActivity : DaggerAppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        binding.fab.setOnClickListener {
-
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

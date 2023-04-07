@@ -7,7 +7,7 @@
     tools:context=".mainscreen.FirstFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cities_list"
+        android:id="@+id/passengers_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -15,5 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:listitem="@layout/item_list" />
+        tools:listitem="@layout/item_person" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
