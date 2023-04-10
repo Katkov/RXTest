@@ -27,10 +27,6 @@ class MainActivity : DaggerAppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener {
-
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

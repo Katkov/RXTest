@@ -8,11 +8,13 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
+import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 @Suppress("unused")
 @Module
 abstract class ViewModelModule {
+    @Singleton
     @Binds
     @IntoMap
     @ViewModelKey(MainViewModel::class)

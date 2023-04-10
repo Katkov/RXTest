@@ -25,7 +25,8 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
         <argument
-            android:name="cityName"
-            app:argType="string" />
+            android:name="todo"
+            app:argType="com.example.rxtest.networking.model.Todo"
+            app:nullable="true" />
     </fragment>
 </navigation>

@@ -18,6 +18,7 @@ import com.example.rxtest.databinding.FragmentFirstBinding
 import com.example.rxtest.helpers.NetworkResult
 import com.example.rxtest.networking.model.City
 import com.example.rxtest.networking.model.Sports
+import com.example.rxtest.networking.model.Todo
 import dagger.android.support.DaggerFragment
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeDelayErrorIterable
@@ -35,7 +36,7 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var adapter: CitiesAdapter
+    private var adapter: TodoAdapter = TodoAdapter { todo -> navigate(todo) }
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -56,13 +57,12 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.todoList.adapter = adapter
         viewModel.result.subscribe {
-            when(it) {
-                is NetworkResult.Loading -> showProgress()
-                is NetworkResult.Empty -> showNoResults()
-                is NetworkResult.Error -> showError()
-                is NetworkResult.Loaded -> showCities(it.data)
-            }
+            adapter.submitList(it)
+        }
+        binding.todoFab.setOnClickListener {
+            navigate(null)
         }
     }
 
@@ -71,28 +71,9 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
         _binding = null
     }
 
-    fun showNoResults() {
-
-    }
-
-    fun showProgress() {
-        Log.d("FirstFragment", "Show Progress")
-    }
-
-    fun showError() {
-        Log.d("FirstFragment", "Show Error")
-    }
-
-    fun showCities(cities: List<City>) {
-        Log.d("FirstFragment", "Show Cities")
-        adapter = CitiesAdapter {
-            Log.d("FirstFragment", "Go to details ${it.name}")
-            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it.name)
-            findNavController().navigate(action)
-
-        }
-        binding.citiesList.adapter = adapter
-        adapter.submitList(cities)
+    fun navigate(todo: Todo?) {
+        val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(todo)
+        findNavController().navigate(action)
     }
 
 }
