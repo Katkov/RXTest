@@ -56,41 +56,19 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val fetchCitiesDisposable = viewModel
-            .fetchCities
-            .doOnSubscribe{ showProgress() }
-            .subscribe (
-                { cities -> showCities(cities) },
-                { _ -> showError()}
-            )
-        viewModel.addToComposable(fetchCitiesDisposable)
-//        val fetchSportsDisposable = viewModel
-//            .fetchSports
-//            .doOnSubscribe { showProgress() }
-//            .subscribe(
-//                { sports -> showSports(sports) },
-//                { _ -> showError()}
-//            )
-//        viewModel.addToComposable(fetchSportsDisposable)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.clearComposable()
+        viewModel.result.subscribe {
+            when(it) {
+                is NetworkResult.Loading -> showProgress()
+                is NetworkResult.Empty -> showNoResults()
+                is NetworkResult.Error -> showError()
+                is NetworkResult.Loaded -> showCities(it.data)
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    fun showSports(sports: Sports) {
-        Log.d("FirstFragment", "Show Sports")
     }
 
     fun showNoResults() {
@@ -108,21 +86,13 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
     fun showCities(cities: List<City>) {
         Log.d("FirstFragment", "Show Cities")
         adapter = CitiesAdapter {
-            //adapter.remove(city = city)
             Log.d("FirstFragment", "Go to details ${it.name}")
-            //val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it.name)
-            //findNavController().navigate(action)
-            deleteItem(it)
+            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it.name)
+            findNavController().navigate(action)
+
         }
         binding.citiesList.adapter = adapter
         adapter.submitList(cities)
     }
 
-    fun deleteItem (city: City) {
-        val list = adapter.currentList
-        val newList = mutableListOf<City>()
-        newList.addAll(list)
-        newList.remove(city)
-        adapter.submitList(newList)
-    }
 }
