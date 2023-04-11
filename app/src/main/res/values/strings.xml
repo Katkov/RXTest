@@ -19,4 +19,5 @@
     <string name="edit_in_todo_list">Edit In Todo List</string>
     <string name="remove_from_todo_list">Remove from Todo List</string>
     <string name="visit_a_museum">Visit a museum</string>
+    <string name="no_todo_items_yet">No Todo Items Yet</string>
 </resources>

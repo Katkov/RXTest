@@ -1,29 +1,18 @@
 package com.example.rxtest.mainscreen
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.rxtest.R
 import com.example.rxtest.databinding.FragmentFirstBinding
-import com.example.rxtest.helpers.NetworkResult
 import com.example.rxtest.helpers.hideKeyboard
-import com.example.rxtest.networking.model.City
-import com.example.rxtest.networking.model.Sports
 import com.example.rxtest.networking.model.Todo
 import dagger.android.support.DaggerFragment
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.internal.operators.completable.CompletableMergeDelayErrorIterable
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -59,11 +48,19 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().hideKeyboard()
         binding.todoList.adapter = adapter
-        val disposableResult = viewModel.result.subscribe { showItems(it)}
-        viewModel.addToComposable(disposableResult)
         binding.todoFab.setOnClickListener {
             navigate(null)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.addToComposable(viewModel.result.subscribe { showItems(it) })
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.clearComposable()
     }
 
     override fun onDestroyView() {
@@ -76,11 +73,21 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
         findNavController().navigate(action)
     }
 
-    private fun showItems(result: Pair<Style,List<Todo>>) {
-        when(result.first) {
+    private fun showItems(result: Pair<Style, List<Todo>>) {
+        when (result.first) {
             Style.SHOW_ALL -> adapter.submitList(result.second)
             Style.SHOW_DONE -> adapter.submitList(result.second.filter { it.isDone })
             Style.SHOW_UNDONE -> adapter.submitList(result.second.filter { !it.isDone })
+        }
+        showListOrDefaultText(result)
+    }
+
+    private fun showListOrDefaultText(result: Pair<Style, List<Todo>>) {
+        binding.apply {
+            todoList.visibility =
+                if (result.second.isEmpty()) View.GONE else View.VISIBLE
+            todoDefaultText.visibility =
+                if (result.second.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 

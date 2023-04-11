@@ -67,11 +67,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         compositeDisposable.dispose()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        clearComposable()
-    }
-
 }
 
 enum class Style {
