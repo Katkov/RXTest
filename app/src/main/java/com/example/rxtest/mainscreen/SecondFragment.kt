@@ -57,8 +57,8 @@ class SecondFragment : DaggerFragment(R.layout.fragment_second) {
             binding.secondTodoCheck.isChecked = it.isDone
             binding.secondAddTodoBtn.text = requireActivity().getText(R.string.edit_in_todo_list)
         }
-        setAddTodoBtnClick()
         if (todo == null) binding.secondRemoveTodoBtn.visibility = View.GONE
+        setAddTodoBtnClick()
         setRemoveBtnClick()
         setKeyboardAction()
     }
@@ -69,7 +69,7 @@ class SecondFragment : DaggerFragment(R.layout.fragment_second) {
     }
 
     private fun setKeyboardAction() {
-        binding.secondTodoEditText.setOnEditorActionListener { v, actionId, event ->
+        binding.secondTodoEditText.setOnEditorActionListener { _, actionId, _ ->
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_SEND -> {
                     addOrEdit()

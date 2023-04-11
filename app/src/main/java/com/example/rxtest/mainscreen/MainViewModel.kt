@@ -2,15 +2,12 @@ package com.example.rxtest.mainscreen
 
 import androidx.lifecycle.ViewModel
 import com.example.rxtest.networking.model.Todo
-import com.example.rxtest.repository.Repository
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
-    private val repository: Repository
-) : ViewModel() {
+class MainViewModel @Inject constructor() : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
