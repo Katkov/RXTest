@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">RXTest</string>
     <string name="action_settings">Settings</string>
+    <string name="action_show_done_items">Show done items</string>
+    <string name="action_show_to_do_items">Show to do items</string>
+    <string name="action_show_all">Show All</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -10,4 +13,9 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_test_rx">TestRxActivity</string>
+    <string name="todo_name">Todo name</string>
+    <string name="is_done">Is done</string>
+    <string name="add_to_todo_list">Add To Todo List</string>
+    <string name="edit_in_todo_list">Edit In Todo List</string>
+    <string name="remove_from_todo_list">Remove from Todo List</string>
 </resources>

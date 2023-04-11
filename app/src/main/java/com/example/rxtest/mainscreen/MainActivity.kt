@@ -7,14 +7,23 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.rxtest.R
 import com.example.rxtest.databinding.ActivityMainBinding
 import dagger.android.support.DaggerAppCompatActivity
+import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: MainViewModel by viewModels {
+        viewModelFactory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +49,18 @@ class MainActivity : DaggerAppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_done -> {
+                viewModel.setStyle(Style.SHOW_DONE)
+                true
+            }
+            R.id.action_to_do -> {
+                viewModel.setStyle(Style.SHOW_UNDONE)
+                true
+            }
+            R.id.action_all -> {
+                viewModel.setStyle(Style.SHOW_ALL)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

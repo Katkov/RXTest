@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.rxtest.R
 import com.example.rxtest.databinding.FragmentFirstBinding
 import com.example.rxtest.helpers.NetworkResult
+import com.example.rxtest.helpers.hideKeyboard
 import com.example.rxtest.networking.model.City
 import com.example.rxtest.networking.model.Sports
 import com.example.rxtest.networking.model.Todo
@@ -54,13 +55,12 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
 
     }
 
-    @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().hideKeyboard()
         binding.todoList.adapter = adapter
-        viewModel.result.subscribe {
-            adapter.submitList(it)
-        }
+        val disposableResult = viewModel.result.subscribe { showItems(it)}
+        viewModel.addToComposable(disposableResult)
         binding.todoFab.setOnClickListener {
             navigate(null)
         }
@@ -71,9 +71,17 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
         _binding = null
     }
 
-    fun navigate(todo: Todo?) {
+    private fun navigate(todo: Todo?) {
         val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(todo)
         findNavController().navigate(action)
+    }
+
+    private fun showItems(result: Pair<Style,List<Todo>>) {
+        when(result.first) {
+            Style.SHOW_ALL -> adapter.submitList(result.second)
+            Style.SHOW_DONE -> adapter.submitList(result.second.filter { it.isDone })
+            Style.SHOW_UNDONE -> adapter.submitList(result.second.filter { !it.isDone })
+        }
     }
 
 }

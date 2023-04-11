@@ -14,34 +14,52 @@ class MainViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
-    val result = BehaviorSubject.create<List<Todo>>()
+    val result = BehaviorSubject.create<Pair<Style, List<Todo>>>()
 
     fun addOrEdit(todo: Todo) {
-        val current = result.value ?: listOf()
-        val mutableCopy = mutableListOf<Todo>()
-        mutableCopy.addAll(current)
-        if (todo.id == -1) {
-            todo.id = mutableCopy.size
-            mutableCopy.add(todo)
-        } else {
-            mutableCopy.forEach { t ->
-                if (t.id == todo.id) {
-                    t.apply {
-                        text = todo.text
-                        isDone = todo.isDone
-                    }
-                }
-            }
+        if (todo.id == -1) add(todo) else edit(todo)
+    }
+
+    fun edit(todo: Todo) {
+        val current = result.value ?: Pair(Style.SHOW_ALL, listOf())
+        val currentStyle = current.first
+        val currentList = current.second
+        val mutableListCopy = mutableListOf<Todo>()
+        mutableListCopy.addAll(currentList)
+        mutableListCopy.find { it.id == todo.id }?.apply {
+            text = todo.text
+            isDone = todo.isDone
         }
-        result.onNext(mutableCopy)
+        result.onNext(currentStyle to mutableListCopy)
+    }
+
+    fun add(todo: Todo) {
+        val current = result.value ?: Pair(Style.SHOW_ALL, listOf())
+        val currentStyle = current.first
+        val currentList = current.second
+        val mutableListCopy = mutableListOf<Todo>()
+        mutableListCopy.addAll(currentList)
+        todo.id = mutableListCopy.size
+        mutableListCopy.add(todo)
+        result.onNext(currentStyle to mutableListCopy)
     }
 
     fun delete(todo: Todo) {
-        val current = result.value ?: listOf()
-        val mutableCopy = mutableListOf<Todo>()
-        mutableCopy.addAll(current)
-        mutableCopy.remove(todo)
-        result.onNext(mutableCopy)
+        val current = result.value ?: Pair(Style.SHOW_ALL, listOf())
+        val currentStyle = current.first
+        val currentList = current.second
+        val mutableListCopy = mutableListOf<Todo>()
+        mutableListCopy.addAll(currentList)
+        mutableListCopy.remove(todo)
+        result.onNext(currentStyle to mutableListCopy)
+    }
+
+    fun setStyle(style: Style) {
+        val current = result.value ?: Pair(Style.SHOW_ALL, listOf())
+        val currentList = current.second
+        val mutableListCopy = mutableListOf<Todo>()
+        mutableListCopy.addAll(currentList)
+        result.onNext(style to mutableListCopy)
     }
 
     fun addToComposable(disposable: Disposable) {
@@ -49,12 +67,16 @@ class MainViewModel @Inject constructor(
     }
 
     fun clearComposable() {
-        compositeDisposable.clear()
+        compositeDisposable.dispose()
     }
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.dispose()
+        clearComposable()
     }
 
+}
+
+enum class Style {
+    SHOW_ALL, SHOW_DONE, SHOW_UNDONE
 }
