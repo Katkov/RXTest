@@ -53,10 +53,9 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
 
     }
 
-    @SuppressLint("UnsafeRepeatOnLifecycleDetector")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.result.subscribe {
+    override fun onStart() {
+        super.onStart()
+        val disposable = viewModel.result.subscribe {
             when(it) {
                 is NetworkResult.Loading -> showProgress()
                 is NetworkResult.Empty -> showNoResults()
@@ -64,6 +63,12 @@ class FirstFragment : DaggerFragment(R.layout.fragment_first) {
                 is NetworkResult.Loaded -> showCities(it.data)
             }
         }
+        viewModel.addToComposable(disposable)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.clearComposable()
     }
 
     override fun onDestroyView() {

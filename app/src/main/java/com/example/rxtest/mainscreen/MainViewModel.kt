@@ -1,6 +1,7 @@
 package com.example.rxtest.mainscreen
 
 import androidx.lifecycle.ViewModel
+import com.example.rxtest.BuildConfig
 import com.example.rxtest.helpers.NetworkResult
 import com.example.rxtest.networking.model.City
 import com.example.rxtest.networking.model.Sports
@@ -21,7 +22,9 @@ class MainViewModel @Inject constructor(
     val result = BehaviorSubject.create<NetworkResult<List<City>>>()
 
     init {
-        getCities()
+        //if (!BuildConfig.IS_TESTING.get()) {
+            getCities()
+        //}
     }
 
     private fun getCities() {
@@ -58,11 +61,6 @@ class MainViewModel @Inject constructor(
 
     fun clearComposable() {
         compositeDisposable.clear()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.dispose()
     }
 
 }
